@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface UserProfile {
   id: string;
-  name: string;
-  phone: string;
-  blood_group?: string;
+  user_id: string;
+  name: string | null;
+  phone: string | null;
+  blood_group?: string | null;
   emergency_contacts: Array<{
     name: string;
     phone: string;
@@ -75,13 +76,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('user_id', user.id)
         .single();
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching profile:', error);
       } else if (data) {
-        setUserProfile(data);
+        // Type assertion to handle the Json type from database
+        const profile: UserProfile = {
+          ...data,
+          emergency_contacts: Array.isArray(data.emergency_contacts) 
+            ? data.emergency_contacts as Array<{name: string; phone: string}>
+            : []
+        };
+        setUserProfile(profile);
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -152,21 +160,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) throw new Error('No user logged in');
 
     const updatedProfile = {
-      id: user.id,
-      phone: user.phone || '',
+      user_id: user.id,
+      phone: user.phone || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      emergency_contacts: [],
+      language: 'en',
       ...userProfile,
       ...profileData
     };
 
     try {
-      // Demo mode - just update local state
-      if (!import.meta.env.VITE_SUPABASE_URL) {
-        setUserProfile(updatedProfile as UserProfile);
-        return;
-      }
-
       const { error } = await supabase
         .from('profiles')
         .upsert(updatedProfile);
@@ -176,7 +180,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw error;
       }
 
-      setUserProfile(updatedProfile as UserProfile);
+      // Fetch updated profile to ensure we have the latest data
+      await fetchUserProfile(user);
     } catch (error) {
       console.error('Error updating profile:', error);
       throw error;
