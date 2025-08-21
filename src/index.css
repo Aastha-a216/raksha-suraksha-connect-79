@@ -1,0 +1,239 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Safety App Design System - Material Design 3 Inspired
+All colors MUST be HSL for consistent theming
+Safety-focused color palette with emergency red, trust blue, and calming greens
+*/
+
+@layer base {
+  :root {
+    /* Core Colors */
+    --background: 248 50% 98%;
+    --foreground: 222 15% 15%;
+    
+    /* Safety Color Palette */
+    --emergency: 0 85% 55%;
+    --emergency-foreground: 0 0% 98%;
+    --emergency-glow: 0 85% 65%;
+    
+    --safe: 145 70% 45%;
+    --safe-foreground: 0 0% 98%;
+    --safe-glow: 145 70% 55%;
+    
+    --warning: 35 90% 55%;
+    --warning-foreground: 0 0% 98%;
+    
+    --trust: 220 85% 55%;
+    --trust-foreground: 0 0% 98%;
+    --trust-glow: 220 85% 65%;
+
+    
+    /* Material Design 3 Surface Colors */
+    --card: 0 0% 100%;
+    --card-foreground: 222 15% 15%;
+    --surface: 248 50% 96%;
+    --surface-variant: 245 20% 92%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 15% 15%;
+
+    --primary: 220 85% 55%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 145 70% 45%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 245 20% 92%;
+    --muted-foreground: 222 15% 45%;
+
+    --accent: 35 90% 55%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 85% 55%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 245 20% 88%;
+    --input: 245 20% 88%;
+    --ring: 220 85% 55%;
+
+    --radius: 1rem;
+    
+    /* Gradients */
+    --gradient-emergency: linear-gradient(135deg, hsl(var(--emergency)), hsl(var(--emergency-glow)));
+    --gradient-safe: linear-gradient(135deg, hsl(var(--safe)), hsl(var(--safe-glow)));
+    --gradient-trust: linear-gradient(135deg, hsl(var(--trust)), hsl(var(--trust-glow)));
+    --gradient-surface: linear-gradient(180deg, hsl(var(--background)), hsl(var(--surface)));
+    
+    /* Shadows */
+    --shadow-emergency: 0 8px 32px hsl(var(--emergency) / 0.3);
+    --shadow-safe: 0 8px 32px hsl(var(--safe) / 0.2);
+    --shadow-elevated: 0 4px 16px hsl(222 15% 15% / 0.1);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 248 50% 98%;
+    --sidebar-foreground: 222 15% 15%;
+    --sidebar-primary: 220 85% 55%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 245 20% 92%;
+    --sidebar-accent-foreground: 222 15% 15%;
+    --sidebar-border: 245 20% 88%;
+    --sidebar-ring: 220 85% 55%;
+  }
+
+  .dark {
+    --background: 222 15% 8%;
+    --foreground: 0 0% 95%;
+    
+    /* Dark mode safety colors */
+    --emergency: 0 85% 60%;
+    --emergency-glow: 0 85% 70%;
+    --safe: 145 70% 50%;
+    --safe-glow: 145 70% 60%;
+    --trust: 220 85% 60%;
+    --trust-glow: 220 85% 70%;
+
+    --card: 222 15% 12%;
+    --card-foreground: 0 0% 95%;
+    --surface: 222 15% 10%;
+    --surface-variant: 222 15% 16%;
+
+    --popover: 222 15% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 220 85% 60%;
+    --primary-foreground: 222 15% 8%;
+
+    --secondary: 145 70% 50%;
+    --secondary-foreground: 222 15% 8%;
+
+    --muted: 222 15% 16%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 35 90% 60%;
+    --accent-foreground: 222 15% 8%;
+
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 0 0% 95%;
+
+    --border: 222 15% 20%;
+    --input: 222 15% 20%;
+    --ring: 220 85% 60%;
+    
+    /* Dark gradients */
+    --gradient-emergency: linear-gradient(135deg, hsl(var(--emergency)), hsl(var(--emergency-glow)));
+    --gradient-safe: linear-gradient(135deg, hsl(var(--safe)), hsl(var(--safe-glow)));
+    --gradient-trust: linear-gradient(135deg, hsl(var(--trust)), hsl(var(--trust-glow)));
+    --gradient-surface: linear-gradient(180deg, hsl(var(--background)), hsl(var(--surface)));
+    
+    /* Dark shadows */
+    --shadow-emergency: 0 8px 32px hsl(var(--emergency) / 0.4);
+    --shadow-safe: 0 8px 32px hsl(var(--safe) / 0.3);
+    --shadow-elevated: 0 4px 16px hsl(0 0% 0% / 0.3);
+
+    --sidebar-background: 222 15% 8%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 220 85% 60%;
+    --sidebar-primary-foreground: 222 15% 8%;
+    --sidebar-accent: 222 15% 16%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 222 15% 20%;
+    --sidebar-ring: 220 85% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer components {
+  /* Emergency SOS Pulse Animation */
+  .sos-pulse {
+    @apply relative;
+    animation: sos-glow 2s ease-in-out infinite;
+  }
+  
+  .sos-pulse::before {
+    content: '';
+    @apply absolute inset-0 rounded-full;
+    background: var(--gradient-emergency);
+    animation: sos-ripple 2s infinite;
+    z-index: -1;
+  }
+  
+  .sos-pulse::after {
+    content: '';
+    @apply absolute inset-0 rounded-full;
+    background: var(--gradient-emergency);
+    animation: sos-ripple 2s infinite 1s;
+    z-index: -1;
+  }
+
+  /* Floating Animation for Cards */
+  .float-card {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Slide Up Animation */
+  .slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  /* Bounce In Animation */
+  .bounce-in {
+    animation: bounceIn 0.6s ease-out;
+  }
+
+  /* Shake Animation for Emergency */
+  .shake {
+    animation: shake 0.5s ease-in-out;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-emergency {
+    background: var(--gradient-emergency);
+  }
+  
+  .bg-gradient-safe {
+    background: var(--gradient-safe);
+  }
+  
+  .bg-gradient-trust {
+    background: var(--gradient-trust);
+  }
+  
+  .bg-gradient-surface {
+    background: var(--gradient-surface);
+  }
+  
+  .shadow-emergency {
+    box-shadow: var(--shadow-emergency);
+  }
+  
+  .shadow-safe {
+    box-shadow: var(--shadow-safe);
+  }
+  
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+}
