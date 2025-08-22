@@ -34,27 +34,33 @@ const PhoneAuth = () => {
   };
 
   const handleSendOTP = async () => {
-    if (!phoneNumber.trim()) {
+    const raw = phoneNumber.trim();
+    const cleaned = raw.replace(/[^\d+]/g, ''); // keep digits and + only
+
+    // Require E.164 format like +919876543210
+    const isE164 = /^\+[1-9]\d{7,14}$/.test(cleaned);
+    if (!isE164) {
       toast({
-        title: "Error",
-        description: "Please enter a valid phone number",
-        variant: "destructive"
+        title: "Invalid phone format",
+        description: "Use international format, e.g., +91XXXXXXXXXX",
+        variant: "destructive",
       });
       return;
     }
 
     setLoading(true);
     try {
-      await sendOTP(phoneNumber);
+      setPhoneNumber(cleaned); // persist normalized phone
+      await sendOTP(cleaned);
       setStep('otp');
       toast({
         title: "OTP Sent",
-        description: "Verification code sent to your phone",
+        description: `Verification code sent to ${cleaned}`,
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to send OTP. Please try again.",
+        description: "Failed to send OTP. Check phone number and region permissions.",
         variant: "destructive"
       });
     } finally {
@@ -136,6 +142,7 @@ const PhoneAuth = () => {
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   className="bg-background border-border/50"
                 />
+                <p className="text-xs text-muted-foreground">Use international format, e.g., +91XXXXXXXXXX</p>
               </div>
 
               <Button
