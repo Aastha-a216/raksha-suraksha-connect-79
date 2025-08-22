@@ -47,19 +47,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session:', session?.user?.phone);
       setSession(session);
       setUser(session?.user ?? null);
-      fetchUserProfile(session?.user);
+      
+      if (session?.user) {
+        setTimeout(() => {
+          fetchUserProfile(session.user);
+        }, 0);
+      }
       setLoading(false);
     });
 
-    // Listen for auth changes
+    // Listen for auth changes - Never use async functions directly as callbacks
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.phone);
         setSession(session);
         setUser(session?.user ?? null);
-        await fetchUserProfile(session?.user);
         setLoading(false);
+        
+        // Defer profile fetching to prevent deadlock
+        if (session?.user) {
+          setTimeout(() => {
+            fetchUserProfile(session.user);
+          }, 0);
+        }
       }
     );
 
