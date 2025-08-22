@@ -98,12 +98,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const sendOTP = async (phoneNumber: string): Promise<void> => {
     try {
-      // Demo mode - simulate OTP sending
-      if (!import.meta.env.VITE_SUPABASE_URL) {
-        console.log('Demo mode: OTP would be sent to', phoneNumber);
-        return;
-      }
-
       const { error } = await supabase.auth.signInWithOtp({
         phone: phoneNumber,
       });
@@ -120,27 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const verifyOTP = async (phoneNumber: string, otp: string): Promise<void> => {
     try {
-      // Demo mode - simulate successful OTP verification with any 6-digit code
-      if (!import.meta.env.VITE_SUPABASE_URL) {
-        if (otp.length === 6) {
-          const mockUser = {
-            id: 'demo-user-' + Date.now(),
-            phone: phoneNumber,
-            email: null,
-            app_metadata: {},
-            user_metadata: {},
-            aud: 'authenticated',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          };
-          setUser(mockUser as any);
-          return;
-        } else {
-          throw new Error('Please enter a 6-digit OTP');
-        }
-      }
-
-      const { error } = await supabase.auth.verifyOtp({
+      const { data, error } = await supabase.auth.verifyOtp({
         phone: phoneNumber,
         token: otp,
         type: 'sms'
@@ -149,6 +123,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) {
         console.error('Error verifying OTP:', error);
         throw error;
+      }
+
+      if (data.user) {
+        setUser(data.user);
+        setSession(data.session);
+        
+        // Fetch or create profile after successful auth
+        await fetchUserProfile(data.user);
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
