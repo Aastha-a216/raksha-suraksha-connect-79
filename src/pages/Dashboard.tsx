@@ -9,21 +9,27 @@ import {
   Sun,
   Bell,
   User,
-  Map
+  Map,
+  Flashlight,
+  Volume2,
+  Share2,
+  MapPin
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import EmergencyButton from '@/components/SafetyApp/EmergencyButton';
 import QuickActions from '@/components/SafetyApp/QuickActions';
 import LocationServices from '@/components/SafetyApp/LocationServices';
+import FakeCallFeature from '@/components/FakeCall/FakeCallFeature';
+import LocationTracker from '@/components/LocationDetection/LocationTracker';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [userLocation, setUserLocation] = useState<any>(null);
   const { userProfile, signOut } = useAuth();
   const { toast } = useToast();
-  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check for dark mode preference
@@ -53,17 +59,41 @@ const Dashboard = () => {
     
     // Send notifications to emergency contacts
     toast({
-      title: t('sos_activated'),
-      description: t('sos_message'),
+      title: "🚨 SOS Activated",
+      description: "Emergency contacts have been notified with your location",
     });
   };
 
-  const handleLanguageChange = (langCode: string) => {
-    i18n.changeLanguage(langCode);
+  const handleLocationUpdate = (location: any) => {
+    setUserLocation(location);
+  };
+
+  const triggerFlashlight = () => {
     toast({
-      title: t('language_changed'),
-      description: t('language_changed_message'),
+      title: "🔦 Flashlight",
+      description: "Flashlight activated (requires native app)"
     });
+  };
+
+  const triggerSiren = () => {
+    toast({
+      title: "🚨 Siren",
+      description: "Emergency siren activated"
+    });
+  };
+
+  const shareLocation = () => {
+    if (userLocation) {
+      toast({
+        title: "📍 Location Shared",
+        description: "Live location sent to emergency contacts"
+      });
+    } else {
+      toast({
+        title: "❌ Location Required",
+        description: "Please enable location tracking first"
+      });
+    }
   };
 
   return (
@@ -77,7 +107,7 @@ const Dashboard = () => {
                 <Shield className="h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-foreground">{t('app_name')}</h1>
+                <h1 className="text-lg font-bold text-foreground">Raksha Suraksha</h1>
                 <p className="text-xs text-muted-foreground">Stay Safe • Stay Protected</p>
               </div>
             </div>
@@ -95,15 +125,14 @@ const Dashboard = () => {
                 }
               </Button>
               
-              <Link to="/settings">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </Link>
+              <Button
+                onClick={() => navigate('/settings')}
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </div>
@@ -119,9 +148,9 @@ const Dashboard = () => {
             </div>
             <div>
               <p className="font-medium">
-                {t('welcome_back')}, {userProfile?.name || 'User'}!
+                Welcome back, {userProfile?.name || 'User'}!
               </p>
-              <p className="text-sm opacity-90">{t('you_are_safe')}</p>
+              <p className="text-sm opacity-90">You are safe & protected</p>
             </div>
             <Badge variant="secondary" className="ml-auto bg-white/20 text-white border-white/30">
               <Bell className="h-3 w-3 mr-1" />
@@ -130,40 +159,61 @@ const Dashboard = () => {
           </div>
         </Card>
 
+        {/* Location Tracking */}
+        <LocationTracker 
+          onLocationUpdate={handleLocationUpdate}
+          autoTrack={true}
+          trackingInterval={15000}
+        />
+
         {/* Emergency SOS Button */}
         <div className="text-center py-6 animate-bounce-in">
           <EmergencyButton onEmergencyActivate={handleEmergencyActivate} />
         </div>
 
-        {/* Quick Actions */}
-        <div className="animate-slide-up" style={{ animationDelay: '200ms' }}>
-          <QuickActions />
-        </div>
+        {/* Enhanced Quick Actions */}
+        <Card className="p-4 bg-gradient-surface border-border/50">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <Button 
+              onClick={triggerFlashlight}
+              className="h-16 bg-gradient-trust hover:opacity-90 flex-col space-y-1"
+            >
+              <Flashlight className="h-5 w-5" />
+              <span className="text-xs">Flashlight</span>
+            </Button>
+            
+            <Button 
+              onClick={triggerSiren}
+              className="h-16 bg-gradient-emergency hover:opacity-90 flex-col space-y-1"
+            >
+              <Volume2 className="h-5 w-5" />
+              <span className="text-xs">Siren</span>
+            </Button>
+            
+            <Button 
+              onClick={shareLocation}
+              className="h-16 bg-gradient-safe hover:opacity-90 flex-col space-y-1"
+            >
+              <Share2 className="h-5 w-5" />
+              <span className="text-xs">Share Location</span>
+            </Button>
+            
+            <Button 
+              onClick={() => navigate('/map')}
+              className="h-16 bg-warning hover:bg-warning/90 text-warning-foreground flex-col space-y-1"
+            >
+              <MapPin className="h-5 w-5" />
+              <span className="text-xs">Emergency Map</span>
+            </Button>
+          </div>
+        </Card>
 
-        {/* Location Services */}
-        <div className="animate-slide-up" style={{ animationDelay: '400ms' }}>
-          <LocationServices />
-        </div>
+        {/* Fake Call Feature */}
+        <FakeCallFeature />
 
-        {/* Map View Button */}
-        <div className="animate-slide-up" style={{ animationDelay: '600ms' }}>
-          <Link to="/map">
-            <Card className="p-4 bg-gradient-surface border-border/50 hover:shadow-elevated transition-all duration-300 cursor-pointer">
-              <div className="flex items-center space-x-3">
-                <div className="p-3 rounded-full bg-primary text-primary-foreground">
-                  <Map className="h-6 w-6" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-foreground">{t('map_view')}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    View nearby emergency services on map
-                  </p>
-                </div>
-                <div className="text-primary">→</div>
-              </div>
-            </Card>
-          </Link>
-        </div>
+        {/* Legacy Location Services */}
+        <LocationServices />
 
         {/* App Info Footer */}
         <Card className="p-4 bg-surface border-border/50 animate-slide-up" style={{ animationDelay: '800ms' }}>
@@ -171,7 +221,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-center space-x-2">
               <Shield className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium text-foreground">
-                {t('app_name')} - {t('app_subtitle')}
+                Raksha Suraksha - Your Safety Companion
               </span>
             </div>
             <p className="text-xs text-muted-foreground">

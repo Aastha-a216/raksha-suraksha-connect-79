@@ -19,6 +19,13 @@
 
   <body>
     <div id="root"></div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHAOdCtJLlZoYjGC_J9nGOo8kGkNsOhTs&libraries=places,geometry&callback=initGoogleMaps" async defer></script>
+    <script>
+      window.initGoogleMaps = function() {
+        window.googleMapsLoaded = true;
+        window.dispatchEvent(new Event('google-maps-loaded'));
+      };
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
